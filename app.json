@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "TaskUp",
+    "slug": "taskup",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1A2240"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.taskup.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2D2B7F"
+      },
+      "package": "com.taskup.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
