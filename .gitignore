@@ -41,3 +41,8 @@ yarn-error.*
 /ios
 /android
 .claude/
+
+# Old/deprecated code directories (replaced by root src/ and taskup-web/)
+taskup_flutter/
+taskup_mobile/
+taskup_web/
