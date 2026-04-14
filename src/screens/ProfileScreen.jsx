@@ -1,74 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  ScrollView, StatusBar, Alert,
+  ScrollView, StatusBar, Alert, Modal, TextInput,
 } from 'react-native';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../firebase/config';
 import { useAuth } from '../contexts/AuthContext';
 import { useTasks } from '../contexts/TaskContext';
 import StatsCard from '../components/StatsCard';
 import { COLORS, SPACING, RADIUS, SHADOWS, getZoneColor } from '../theme';
 
 export default function ProfileScreen({ navigation }) {
-  const { user, userProfile, logout } = useAuth();
-  const { zones } = useTasks();
-  const [stats, setStats] = useState({
-    completed: 0, pending: 0, total: 0, zones: 0,
-    completedToday: 0, completedWeek: 0,
+  const { user, userProfile, logout, updateUserProfileData } = useAuth();
+  // FIX: Use tasks from context instead of independent Firestore query
+  const { tasks, zones } = useTasks();
+  const [editOpen, setEditOpen] = useState(false);
+  const [editName, setEditName] = useState(userProfile?.name || '');
+  const [editCollege, setEditCollege] = useState(userProfile?.college || '');
+  const [editDept, setEditDept] = useState(userProfile?.dept || '');
+  const [saving, setSaving] = useState(false);
+
+  // Compute stats directly from context (always up-to-date, no stale data)
+  const completed = tasks.filter(t => t.status === 'completed');
+  const pending = tasks.filter(t => t.status === 'pending');
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  const weekAgo = new Date(now.getTime() - 7 * 86400000);
+
+  const completedToday = completed.filter(t => {
+    if (!t.completedAt?.toDate) return false;
+    return t.completedAt.toDate().toISOString().split('T')[0] === todayStr;
+  }).length;
+  const completedWeek = completed.filter(t => {
+    if (!t.completedAt?.toDate) return false;
+    return t.completedAt.toDate() >= weekAgo;
+  }).length;
+
+  // Per-zone breakdown
+  const zoneCounts = {};
+  tasks.forEach(t => {
+    if (!zoneCounts[t.zone]) zoneCounts[t.zone] = { total: 0, done: 0 };
+    zoneCounts[t.zone].total++;
+    if (t.status === 'completed') zoneCounts[t.zone].done++;
   });
-  const [zoneCounts, setZoneCounts] = useState({});
 
-  useEffect(() => { loadStats(); }, []);
-
-  const loadStats = async () => {
-    try {
-      const q = query(collection(db, 'tasks'), where('userId', '==', user.uid));
-      const snap = await getDocs(q);
-      const all = snap.docs.map(d => d.data());
-
-      const now = new Date();
-      const todayStr = now.toISOString().split('T')[0];
-      const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-      const completed = all.filter(t => t.status === 'completed');
-      const completedToday = completed.filter(t => {
-        if (!t.completedAt?.toDate) return false;
-        return t.completedAt.toDate().toISOString().split('T')[0] === todayStr;
-      }).length;
-      const completedWeek = completed.filter(t => {
-        if (!t.completedAt?.toDate) return false;
-        return t.completedAt.toDate() >= weekAgo;
-      }).length;
-
-      // Per-zone counts
-      const zCounts = {};
-      all.forEach(t => {
-        if (!zCounts[t.zone]) zCounts[t.zone] = { total: 0, done: 0 };
-        zCounts[t.zone].total++;
-        if (t.status === 'completed') zCounts[t.zone].done++;
-      });
-
-      setStats({
-        completed: completed.length,
-        pending: all.filter(t => t.status === 'pending').length,
-        total: all.length,
-        zones: zones.length,
-        completedToday,
-        completedWeek,
-      });
-      setZoneCounts(zCounts);
-    } catch (e) { console.warn(e.message); }
-  };
-
-  const weekly = stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0;
+  const weekly = tasks.length > 0 ? Math.round((completed.length / tasks.length) * 100) : 0;
   const initial = (userProfile?.name || user?.email || 'U')[0].toUpperCase();
+  const streak = userProfile?.streak || 0;
+  const xp = userProfile?.xp || 0;
 
   const handleLogout = () => {
     Alert.alert('Log Out', 'Are you sure you want to log out?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Log Out', style: 'destructive', onPress: logout },
     ]);
+  };
+
+  // Save edited profile
+  const handleSaveProfile = async () => {
+    setSaving(true);
+    try {
+      await updateUserProfileData({
+        name: editName.trim(),
+        college: editCollege.trim(),
+        dept: editDept.trim(),
+      });
+      setEditOpen(false);
+    } catch (e) {
+      Alert.alert('Error', e.message);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -99,10 +99,10 @@ export default function ProfileScreen({ navigation }) {
 
       {/* Stats grid */}
       <View style={styles.statsGrid}>
-        <StatsCard value={stats.completedToday} label="Today" color={COLORS.successSage} />
-        <StatsCard value={stats.completedWeek} label="This Week" color={COLORS.accentClay} />
-        <StatsCard value={stats.completed} label="Completed" color={COLORS.primaryMoss} />
-        <StatsCard value={stats.pending} label="Pending" color={COLORS.warningAmber} />
+        <StatsCard value={completedToday} label="Today" color={COLORS.successSage} />
+        <StatsCard value={completedWeek} label="This Week" color={COLORS.accentClay} />
+        <StatsCard value={completed.length} label="Completed" color={COLORS.primaryMoss} />
+        <StatsCard value={pending.length} label="Pending" color={COLORS.warningAmber} />
       </View>
 
       {/* Weekly productivity */}
@@ -152,7 +152,21 @@ export default function ProfileScreen({ navigation }) {
           activeOpacity={0.8}
         >
           <Text style={styles.settingsText}>Manage Zones</Text>
-          <Text style={styles.settingsArrow}>›</Text>
+          <Text style={styles.settingsArrow}>{"\u203A"}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.settingsRow}
+          onPress={() => {
+            setEditName(userProfile?.name || '');
+            setEditCollege(userProfile?.college || '');
+            setEditDept(userProfile?.dept || '');
+            setEditOpen(true);
+          }}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.settingsText}>Edit Profile</Text>
+          <Text style={styles.settingsArrow}>{"\u203A"}</Text>
         </TouchableOpacity>
       </View>
 
@@ -160,6 +174,29 @@ export default function ProfileScreen({ navigation }) {
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
         <Text style={styles.logoutTxt}>Log Out</Text>
       </TouchableOpacity>
+
+      {/* Edit Profile Modal */}
+      <Modal visible={editOpen} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Edit Profile</Text>
+              <TouchableOpacity onPress={() => setEditOpen(false)}>
+                <Text style={styles.modalCancel}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.fieldLabel}>Name</Text>
+            <TextInput style={styles.modalInput} value={editName} onChangeText={setEditName} placeholder="Your name" />
+            <Text style={styles.fieldLabel}>College</Text>
+            <TextInput style={styles.modalInput} value={editCollege} onChangeText={setEditCollege} placeholder="Your college" />
+            <Text style={styles.fieldLabel}>Department</Text>
+            <TextInput style={styles.modalInput} value={editDept} onChangeText={setEditDept} placeholder="Your department" />
+            <TouchableOpacity style={styles.saveBtn} onPress={handleSaveProfile} disabled={saving}>
+              <Text style={styles.saveBtnText}>{saving ? '...' : 'Save Changes'}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -174,9 +211,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: SPACING.xxl,
   },
   screenTitle: {
-    fontSize: 22,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '900',
     color: COLORS.white,
+    textTransform: 'uppercase',
   },
   avatarSection: {
     alignItems: 'center',
@@ -187,29 +225,34 @@ const styles = StyleSheet.create({
   avatarRing: {
     width: 90,
     height: 90,
-    borderRadius: 45,
+    borderRadius: RADIUS.sm,
     backgroundColor: COLORS.backgroundCream,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.md,
+    ...SHADOWS.card,
   },
   avatar: {
     width: 80,
     height: 80,
-    borderRadius: 40,
-    backgroundColor: COLORS.primaryMoss,
+    borderRadius: RADIUS.sm,
+    backgroundColor: COLORS.warningAmber, // yellow pops nicely
     alignItems: 'center',
     justifyContent: 'center',
   },
   avatarText: {
-    fontSize: 36,
-    fontWeight: '800',
-    color: COLORS.white,
+    fontSize: 42,
+    fontWeight: '900',
+    color: COLORS.textCharcoal,
   },
   displayName: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 24,
+    fontWeight: '900',
     color: COLORS.textCharcoal,
+    textTransform: 'uppercase',
+    letterSpacing: -0.5,
   },
   college: {
     fontSize: 13,
@@ -253,14 +296,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Courier',
   },
   progTrack: {
-    height: 8,
-    backgroundColor: COLORS.softBorder,
-    borderRadius: 4,
+    height: 12,
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.textCharcoal,
+    borderRadius: RADIUS.sm,
     overflow: 'hidden',
   },
   progFill: {
-    height: 8,
-    borderRadius: 4,
+    height: 12,
+    borderRadius: RADIUS.sm,
   },
   zoneSection: {
     marginHorizontal: SPACING.xl,
@@ -279,9 +324,11 @@ const styles = StyleSheet.create({
     gap: SPACING.sm,
   },
   zDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 12,
+    height: 12,
+    borderRadius: RADIUS.sm,
+    borderWidth: 2,
+    borderColor: COLORS.textCharcoal,
   },
   zoneName: {
     fontSize: 13,
@@ -299,14 +346,16 @@ const styles = StyleSheet.create({
   },
   zoneBar: {
     width: 60,
-    height: 4,
-    backgroundColor: COLORS.softBorder,
-    borderRadius: 2,
+    height: 8,
+    backgroundColor: COLORS.white,
+    borderWidth: 2,
+    borderColor: COLORS.textCharcoal,
+    borderRadius: RADIUS.sm,
     overflow: 'hidden',
   },
   zoneBarFill: {
-    height: 4,
-    borderRadius: 2,
+    height: 8,
+    borderRadius: RADIUS.sm,
   },
   settingsSection: {
     marginHorizontal: SPACING.xl,
@@ -316,12 +365,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.softSurface,
+    backgroundColor: COLORS.white,
     padding: SPACING.lg,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1,
+    borderRadius: RADIUS.sm,
+    borderWidth: 3,
     borderColor: COLORS.softBorder,
     marginBottom: SPACING.sm,
+    ...SHADOWS.soft,
   },
   settingsText: {
     fontSize: 15,
@@ -336,14 +386,85 @@ const styles = StyleSheet.create({
   logoutBtn: {
     marginHorizontal: SPACING.xl,
     padding: SPACING.lg,
-    borderRadius: RADIUS.lg,
-    backgroundColor: COLORS.roseLight,
+    borderRadius: RADIUS.sm,
+    backgroundColor: COLORS.warningAmber,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
+    alignItems: 'center',
+    marginBottom: SPACING.xxl,
+    ...SHADOWS.button,
+  },
+  logoutTxt: {
+    color: COLORS.textCharcoal,
+    fontWeight: '900',
+    fontSize: 16,
+    textTransform: 'uppercase',
+  },
+  // Edit Profile modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalCard: {
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: COLORS.backgroundCream,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
+    borderRadius: RADIUS.md,
+    padding: SPACING.xxl,
+    ...SHADOWS.elevated,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: SPACING.xxl,
   },
-  logoutTxt: {
-    color: COLORS.criticalRose,
-    fontWeight: '700',
-    fontSize: 15,
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+  modalCancel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.mutedText,
+  },
+  fieldLabel: {
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase',
+    marginBottom: SPACING.sm,
+    color: COLORS.textCharcoal,
+  },
+  modalInput: {
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: SPACING.lg,
+    ...SHADOWS.soft,
+  },
+  saveBtn: {
+    backgroundColor: COLORS.primaryMoss,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
+    borderRadius: RADIUS.md,
+    padding: SPACING.md,
+    alignItems: 'center',
+    marginTop: SPACING.sm,
+    ...SHADOWS.button,
+  },
+  saveBtnText: {
+    color: COLORS.white,
+    fontWeight: '900',
+    fontSize: 16,
+    textTransform: 'uppercase',
   },
 });

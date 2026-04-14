@@ -1,0 +1,119 @@
+/* ============================================
+   MODAL STYLES - Neo-Brutalism Design
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-lg);
+  animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  background-color: var(--color-bg-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-xl);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp 200ms ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.modal__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.modal__close {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-card);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.modal__close:hover {
+  background-color: var(--color-accent-pink);
+  color: #FFFFFF;
+}
+
+.modal__body {
+  margin-bottom: var(--space-lg);
+}
+
+.modal__footer {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: flex-end;
+  padding-top: var(--space-md);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* Confirmation modal variant */
+.modal-confirm .modal {
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-confirm__icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-accent-yellow);
+}
+
+.modal-confirm__message {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-lg);
+}

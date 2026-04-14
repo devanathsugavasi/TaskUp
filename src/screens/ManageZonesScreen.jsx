@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, TextInput,
   StyleSheet, FlatList, Alert, StatusBar,
-  Animated, Modal,
+  Modal,
 } from 'react-native';
 import { useTasks } from '../contexts/TaskContext';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
 import EmptyState from '../components/EmptyState';
+import ZoneCard from '../components/ZoneCard';
 import { COLORS, SPACING, RADIUS, SHADOWS } from '../theme';
 
 const ZONE_COLOR_OPTIONS = [
@@ -33,7 +34,7 @@ export default function ManageZonesScreen({ navigation }) {
 
   useEffect(() => { fetchZones(); }, []);
 
-  // ── Open modal for add / edit ──
+  // Open modal for add / edit
   const openAdd = () => {
     setEditingZone(null);
     setZoneName('');
@@ -48,14 +49,13 @@ export default function ManageZonesScreen({ navigation }) {
     setShowModal(true);
   };
 
-  // ── Save zone ──
+  // Save zone (create or update)
   const handleSave = async () => {
     const trimmed = zoneName.trim();
     if (!trimmed) {
       Alert.alert('Name Required', 'Please enter a zone name.');
       return;
     }
-
     // Check for duplicate names (exclude current editing zone)
     const duplicate = zones.find(
       z => z.name.toLowerCase() === trimmed.toLowerCase() && z.id !== editingZone?.id
@@ -64,7 +64,6 @@ export default function ManageZonesScreen({ navigation }) {
       Alert.alert('Duplicate', 'A zone with this name already exists.');
       return;
     }
-
     setSaving(true);
     try {
       if (editingZone) {
@@ -80,7 +79,7 @@ export default function ManageZonesScreen({ navigation }) {
     }
   };
 
-  // ── Delete zone ──
+  // Delete zone with confirmation
   const handleDelete = (zone) => {
     if (zones.length <= 1) {
       Alert.alert('Cannot Delete', 'You need at least one zone.');
@@ -106,53 +105,6 @@ export default function ManageZonesScreen({ navigation }) {
     );
   };
 
-  // ── Render zone card ──
-  const renderZone = ({ item, index }) => {
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    useEffect(() => {
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        delay: index * 60,
-        useNativeDriver: true,
-      }).start();
-    }, []);
-
-    return (
-      <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: fadeAnim.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }}>
-        <View style={styles.zoneCard}>
-          {/* Color accent */}
-          <View style={[styles.colorStripe, { backgroundColor: item.color || COLORS.primaryMoss }]} />
-
-          <View style={styles.zoneBody}>
-            <View style={styles.zoneInfo}>
-              <View style={[styles.colorDot, { backgroundColor: item.color || COLORS.primaryMoss }]} />
-              <Text style={styles.zoneName}>{item.name}</Text>
-            </View>
-
-            <View style={styles.zoneActions}>
-              <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => openEdit(item)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Text style={styles.editText}>Edit</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => handleDelete(item)}
-                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-              >
-                <Text style={styles.deleteText}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Animated.View>
-    );
-  };
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor={COLORS.backgroundCream} />
@@ -174,7 +126,14 @@ export default function ManageZonesScreen({ navigation }) {
       <FlatList
         data={zones}
         keyExtractor={item => item.id}
-        renderItem={renderZone}
+        renderItem={({ item, index }) => (
+          <ZoneCard
+            zone={item}
+            index={index}
+            onEdit={openEdit}
+            onDelete={handleDelete}
+          />
+        )}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           <EmptyState
@@ -289,9 +248,10 @@ const styles = StyleSheet.create({
     color: COLORS.primaryMoss,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 26,
+    fontWeight: '900',
     color: COLORS.textCharcoal,
+    textTransform: 'uppercase',
   },
   subtitle: {
     fontSize: 13,
@@ -305,11 +265,11 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   zoneCard: {
-    backgroundColor: COLORS.softSurface,
-    borderRadius: RADIUS.xl,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.sm,
     marginBottom: SPACING.md,
     overflow: 'hidden',
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: COLORS.softBorder,
     ...SHADOWS.soft,
   },
@@ -330,14 +290,17 @@ const styles = StyleSheet.create({
     gap: SPACING.md,
   },
   colorDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 14,
+    height: 14,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: COLORS.textCharcoal,
   },
   zoneName: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '800',
     color: COLORS.textCharcoal,
+    textTransform: 'uppercase',
     flex: 1,
   },
   zoneActions: {
@@ -378,8 +341,12 @@ const styles = StyleSheet.create({
   },
   modalCard: {
     backgroundColor: COLORS.white,
-    borderTopLeftRadius: RADIUS.xxl + 4,
-    borderTopRightRadius: RADIUS.xxl + 4,
+    borderTopLeftRadius: RADIUS.sm,
+    borderTopRightRadius: RADIUS.sm,
+    borderTopWidth: 3,
+    borderLeftWidth: 3,
+    borderRightWidth: 3,
+    borderColor: COLORS.softBorder,
     padding: SPACING.xxl,
     paddingBottom: SPACING.section,
     ...SHADOWS.elevated,
@@ -391,9 +358,10 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xxl,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 24,
+    fontWeight: '900',
     color: COLORS.textCharcoal,
+    textTransform: 'uppercase',
   },
   closeText: {
     fontSize: 14,
@@ -407,23 +375,27 @@ const styles = StyleSheet.create({
   previewCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.softSurface,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1.5,
+    backgroundColor: COLORS.white,
+    borderRadius: RADIUS.sm,
+    borderWidth: 3,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
     gap: SPACING.md,
     minWidth: 180,
     justifyContent: 'center',
+    ...SHADOWS.soft,
   },
   previewDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 14,
+    height: 14,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: COLORS.textCharcoal,
   },
   previewName: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '800',
+    textTransform: 'uppercase',
     color: COLORS.textCharcoal,
   },
   fieldLabel: {
@@ -435,14 +407,16 @@ const styles = StyleSheet.create({
     marginTop: SPACING.sm,
   },
   input: {
-    backgroundColor: COLORS.softSurface,
-    borderWidth: 1,
+    backgroundColor: COLORS.white,
+    borderWidth: 3,
     borderColor: COLORS.softBorder,
     color: COLORS.textCharcoal,
     padding: SPACING.lg,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.sm,
     fontSize: 16,
+    fontWeight: '600',
     marginBottom: SPACING.lg,
+    ...SHADOWS.soft,
   },
   colorGrid: {
     flexDirection: 'row',
@@ -451,25 +425,25 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.sm,
   },
   colorOption: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: COLORS.softBorder,
     alignItems: 'center',
     justifyContent: 'center',
   },
   colorSelected: {
-    borderWidth: 3,
-    borderColor: COLORS.white,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 4,
+    borderWidth: 4,
+    borderColor: COLORS.textCharcoal,
+    ...SHADOWS.button,
   },
   colorCheck: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 16,
+    height: 16,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: COLORS.textCharcoal,
     backgroundColor: COLORS.white,
   },
 });

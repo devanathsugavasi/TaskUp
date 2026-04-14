@@ -4,6 +4,8 @@ import {
   StyleSheet, Alert, KeyboardAvoidingView,
   Platform, StatusBar, ScrollView,
 } from 'react-native';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../firebase/config';
 import { useAuth } from '../contexts/AuthContext';
 import InputField from '../components/InputField';
 import PrimaryButton from '../components/PrimaryButton';
@@ -14,6 +16,20 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+
+  // Send password reset email via Firebase Auth
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert('Enter Email', 'Please enter your email address above, then tap Forgot Password.');
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email.trim());
+      Alert.alert('Email Sent', 'A password reset link has been sent to your email.');
+    } catch (error) {
+      Alert.alert('Error', 'Could not send reset email. Check the email address.');
+    }
+  };
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -78,7 +94,7 @@ export default function LoginScreen({ navigation }) {
           secureTextEntry
         />
 
-        <TouchableOpacity style={styles.forgotWrap}>
+        <TouchableOpacity style={styles.forgotWrap} onPress={handleForgotPassword}>
           <Text style={styles.forgotText}>Forgot password?</Text>
         </TouchableOpacity>
 
@@ -131,9 +147,12 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     backgroundColor: COLORS.primaryMoss,
-    borderRadius: RADIUS.lg,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
+    borderRadius: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    ...SHADOWS.button,
   },
   logoT: {
     fontSize: 34,
@@ -152,11 +171,12 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-18deg' }],
   },
   title: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '900',
     color: COLORS.textCharcoal,
     textAlign: 'center',
-    letterSpacing: -0.5,
+    letterSpacing: -1,
+    textTransform: 'uppercase',
   },
   subtitle: {
     fontSize: 14,
@@ -167,11 +187,11 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: COLORS.white,
-    borderRadius: RADIUS.xxl,
+    borderRadius: RADIUS.sm,
     padding: SPACING.xxl,
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: COLORS.softBorder,
-    ...SHADOWS.card,
+    ...SHADOWS.elevated,
   },
   forgotWrap: {
     alignSelf: 'flex-end',
@@ -193,6 +213,7 @@ const styles = StyleSheet.create({
   },
   linkBold: {
     color: COLORS.accentClay,
-    fontWeight: '700',
+    fontWeight: '900',
+    textTransform: 'uppercase',
   },
 });

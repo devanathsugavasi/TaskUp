@@ -154,14 +154,16 @@ const styles = StyleSheet.create({
   },
   backText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.primaryMoss,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    color: COLORS.textCharcoal,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '900',
     color: COLORS.textCharcoal,
-    letterSpacing: -0.5,
+    letterSpacing: -1,
+    textTransform: 'uppercase',
     marginBottom: SPACING.xs,
   },
   subtitle: {
@@ -171,11 +173,11 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: COLORS.white,
-    borderRadius: RADIUS.xxl,
+    borderRadius: RADIUS.sm,
     padding: SPACING.xxl,
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: COLORS.softBorder,
-    ...SHADOWS.card,
+    ...SHADOWS.elevated,
   },
   linkWrap: {
     alignItems: 'center',
@@ -187,7 +189,8 @@ const styles = StyleSheet.create({
     color: COLORS.mutedText,
   },
   linkBold: {
-    color: COLORS.accentClay,
-    fontWeight: '700',
+    color: COLORS.accentClay, // Hot pink!
+    fontWeight: '900',
+    textTransform: 'uppercase',
   },
 });

@@ -1,0 +1,70 @@
+/* ============================================
+   PRIORITY PICKER STYLES - Neo-Brutalism Design
+   ============================================ */
+
+.priority-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.priority-picker__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-card);
+  cursor: pointer;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.priority-picker__option:hover {
+  transform: scale(1.05);
+  border-color: var(--priority-color);
+}
+
+.priority-picker__option--selected {
+  background-color: var(--priority-color);
+  border-color: var(--priority-color);
+  color: #000000;
+}
+
+.priority-picker__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.priority-picker__indicator {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-card);
+  transition: background-color var(--transition-fast);
+}
+
+.priority-picker__option--selected .priority-picker__indicator {
+  background-color: #000000;
+  border-color: #000000;
+}
+
+.priority-picker__option--selected .priority-picker__indicator::after {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 3px;
+  background-color: var(--color-bg-card);
+  border-radius: 1px;
+}
+
+.priority-picker__label {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 900;
+  text-transform: uppercase;
+}

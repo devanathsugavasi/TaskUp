@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, StatusBar } from 'react-native';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
-import { COLORS, SPACING, RADIUS } from '../theme';
+import { COLORS, SPACING, RADIUS, SHADOWS } from '../theme';
 
 export default function SplashScreen({ navigation }) {
   return (
@@ -64,9 +64,12 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     backgroundColor: COLORS.primaryMoss,
-    borderRadius: RADIUS.xl,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
+    borderRadius: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    ...SHADOWS.card,
   },
   logoLetter: {
     fontSize: 42,
@@ -85,10 +88,11 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-18deg' }],
   },
   appName: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: '900',
     color: COLORS.textCharcoal,
     letterSpacing: -1,
+    textTransform: 'uppercase',
   },
   subtitle: {
     fontSize: 14,

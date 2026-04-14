@@ -1,0 +1,61 @@
+/* ============================================
+   ZONE CHIP STYLES - Neo-Brutalism Design
+   ============================================ */
+
+.zone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-card);
+  cursor: pointer;
+  transition: transform var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.zone-chip:hover {
+  transform: scale(1.05);
+  border-color: var(--zone-color);
+}
+
+.zone-chip--selected {
+  background-color: var(--zone-color);
+  border-color: var(--zone-color);
+  color: #000000;
+}
+
+.zone-chip--selected:hover {
+  transform: scale(1.05);
+}
+
+.zone-chip__color {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.zone-chip__name {
+  white-space: nowrap;
+}
+
+.zone-chip__delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: background-color var(--transition-fast);
+}
+
+.zone-chip__delete:hover {
+  background-color: var(--color-accent-pink);
+  color: #FFFFFF;
+}

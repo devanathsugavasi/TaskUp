@@ -1,18 +1,18 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { COLORS, RADIUS, SPACING, getZoneColor } from '../theme';
+import { COLORS, RADIUS, SPACING, SHADOWS, getZoneColor } from '../theme';
 
 export default function ZoneChip({ zone, selected, onPress }) {
   const zoneColor = zone?.color
-    ? { accent: zone.color, bg: zone.color + '18' }
+    ? { accent: zone.color, bg: '#FFFFFF' }
     : getZoneColor(zone?.name);
 
   return (
     <TouchableOpacity
       style={[
         styles.chip,
-        { borderColor: zoneColor.accent },
-        selected && { backgroundColor: zoneColor.accent },
+        { backgroundColor: selected ? zoneColor.accent : zoneColor.bg },
+        selected && styles.chipSelected,
       ]}
       onPress={onPress}
       activeOpacity={0.8}
@@ -20,7 +20,7 @@ export default function ZoneChip({ zone, selected, onPress }) {
       <Text
         style={[
           styles.text,
-          { color: selected ? COLORS.white : zoneColor.accent },
+          { color: selected ? COLORS.textCharcoal : COLORS.textCharcoal },
         ]}
       >
         {zone?.name || zone}
@@ -31,17 +31,23 @@ export default function ZoneChip({ zone, selected, onPress }) {
 
 const styles = StyleSheet.create({
   chip: {
-    borderWidth: 1.5,
-    borderRadius: RADIUS.pill,
+    borderWidth: 2,
+    borderColor: COLORS.softBorder,
+    borderRadius: RADIUS.sm,
     paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm + 1,
+    paddingVertical: SPACING.sm + 2,
     marginRight: SPACING.sm,
-    marginBottom: SPACING.sm,
-    backgroundColor: COLORS.transparent,
+    marginBottom: SPACING.md,
+    ...SHADOWS.soft,
+  },
+  chipSelected: {
+    borderWidth: 3,
+    ...SHADOWS.button,
   },
   text: {
-    fontSize: 13,
-    fontWeight: '600',
-    letterSpacing: 0.2,
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
 });

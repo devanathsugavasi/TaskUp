@@ -5,11 +5,11 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#1A2240"
+      "backgroundColor": "#FFFFFF"
     },
     "ios": {
       "supportsTablet": false,
@@ -18,12 +18,24 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#2D2B7F"
+        "backgroundColor": "#000000"
       },
       "package": "com.taskup.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "firebaseApiKey": "AIzaSyD6GA7U1N71V-2IM7hOogESxoCoDSUjm1U",
+      "firebaseAuthDomain": "task-4f5f9.firebaseapp.com",
+      "firebaseProjectId": "task-4f5f9",
+      "firebaseStorageBucket": "task-4f5f9.firebasestorage.app",
+      "firebaseMessagingSenderId": "1090821655655",
+      "firebaseAppId": "1:1090821655655:web:86c52304e5f68b784058c2",
+      "firebaseMeasurementId": "G-KJHF9CBWTB",
+      "eas": {
+        "projectId": "task-4f5f9"
+      }
     }
   }
 }

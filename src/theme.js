@@ -1,91 +1,93 @@
 /**
- * TaskUp Design System — Premium Organic-Tech Tokens
+ * TaskUp Design System — Neo Brutalism Tokens
  * ─────────────────────────────────────────────────────
  * Central source of truth for colors, spacing, radii,
  * typography, shadows, and semantic mappings.
+ * Features: High contrast, stark borders, hard shadows, sharp corners.
  */
 
 // ── Colors ───────────────────────────────────────────
 export const COLORS = {
-  primaryMoss: '#2E4036',
-  accentClay: '#CC5833',
-  backgroundCream: '#F2F0E9',
-  textCharcoal: '#1A1A1A',
-  softSurface: '#FAF8F3',
-  softBorder: 'rgba(46,64,54,0.12)',
-  mutedText: 'rgba(26,26,26,0.55)',
+  primaryMoss: '#000000', // Black takes over as primary for brutalism
+  accentClay: '#FF007F', // Hot Pink
+  backgroundCream: '#FFFFFF', // Stark White
+  textCharcoal: '#000000',
+  softSurface: '#F0F0F0', // Very light gray for panels
+  softBorder: '#000000', // Solid black borders everywhere
+  mutedText: '#333333', // Darker gray for readability on white
 
-  successSage: '#7A9B76',
-  warningAmber: '#C58A2B',
-  criticalRose: '#B64C4C',
-  infoMist: '#A9B8B0',
+  successSage: '#00FF88', // Neo Mint
+  warningAmber: '#FFD500', // Bright Yellow
+  criticalRose: '#FF007F', // Hot Pink
+  infoMist: '#00FFFF', // Cyan
 
   white: '#FFFFFF',
   transparent: 'transparent',
 
-  // Surface tints
-  mossLight: 'rgba(46,64,54,0.06)',
-  clayLight: 'rgba(204,88,51,0.08)',
-  sageLight: 'rgba(122,155,118,0.10)',
-  amberLight: 'rgba(197,138,43,0.10)',
-  roseLight: 'rgba(182,76,76,0.08)',
+  // Surface tints - replaced with high-contrast variants
+  mossLight: '#E6E6E6', // Light gray
+  clayLight: '#FFB3D9', // Light pink
+  sageLight: '#B3FFD6', // Light mint
+  amberLight: '#FFF2B3', // Light yellow
+  roseLight: '#FFB3D9', // Light pink
+  cyanLight: '#B3FFFF', // Light cyan
 };
 
 // ── Priority System ──────────────────────────────────
 export const PRIORITY_COLORS = {
-  low: '#7A9B76',
-  medium: '#C58A2B',
-  high: '#CC5833',
-  urgent: '#B64C4C',
+  low: '#00FF88', // Neo Mint
+  medium: '#00FFFF', // Cyan
+  high: '#FFD500', // Bright Yellow
+  urgent: '#FF007F', // Hot Pink
 };
 
 export const PRIORITY_BG = {
-  low: 'rgba(122,155,118,0.12)',
-  medium: 'rgba(197,138,43,0.12)',
-  high: 'rgba(204,88,51,0.10)',
-  urgent: 'rgba(182,76,76,0.10)',
+  low: '#B3FFD6',
+  medium: '#B3FFFF',
+  high: '#FFF2B3',
+  urgent: '#FFB3D9',
 };
 
 export const PRIORITY_ORDER = { urgent: 0, high: 1, medium: 2, low: 3 };
 
 // ── Zone Color System ────────────────────────────────
 export const ZONE_COLORS = {
-  'Work Zone':     { accent: '#A8705A', bg: 'rgba(168,112,90,0.10)' },
-  'Reading Zone':  { accent: '#5A7F66', bg: 'rgba(90,127,102,0.10)' },
-  'Meeting Zone':  { accent: '#5F7A6E', bg: 'rgba(95,122,110,0.10)' },
-  'Food Zone':     { accent: '#C58A2B', bg: 'rgba(197,138,43,0.10)' },
-  'Exam Zone':     { accent: '#B06050', bg: 'rgba(176,96,80,0.10)' },
-  'Personal Zone': { accent: '#7A9B76', bg: 'rgba(122,155,118,0.10)' },
+  'Work Zone':     { accent: '#FF007F', bg: '#FFB3D9' }, // Hot Pink
+  'Reading Zone':  { accent: '#00FFFF', bg: '#B3FFFF' }, // Cyan
+  'Meeting Zone':  { accent: '#FFD500', bg: '#FFF2B3' }, // Yellow
+  'Food Zone':     { accent: '#00FF88', bg: '#B3FFD6' }, // Mint
+  'Exam Zone':     { accent: '#FF007F', bg: '#FFB3D9' }, // Pink
+  'Personal Zone': { accent: '#00FFFF', bg: '#B3FFFF' }, // Cyan
 };
 
-export const DEFAULT_ZONE_ACCENT = { accent: '#2E4036', bg: 'rgba(46,64,54,0.10)' };
+export const DEFAULT_ZONE_ACCENT = { accent: '#000000', bg: '#E6E6E6' };
 
 export const getZoneColor = (zoneName) =>
   ZONE_COLORS[zoneName] || DEFAULT_ZONE_ACCENT;
 
 // ── Typography ───────────────────────────────────────
 export const FONTS = {
-  heading: { fontFamily: 'System', fontWeight: '800' },
-  headingLight: { fontFamily: 'System', fontWeight: '600' },
-  body: { fontFamily: 'System', fontWeight: '400' },
-  bodyMedium: { fontFamily: 'System', fontWeight: '500' },
-  bodySemibold: { fontFamily: 'System', fontWeight: '600' },
-  bodyBold: { fontFamily: 'System', fontWeight: '700' },
-  mono: { fontFamily: 'Courier', fontWeight: '600' },
-  label: { fontFamily: 'System', fontWeight: '700', letterSpacing: 1.2 },
+  heading: { fontFamily: 'System', fontWeight: '900' }, // Heaviest weight possible
+  headingLight: { fontFamily: 'System', fontWeight: '800' },
+  body: { fontFamily: 'System', fontWeight: '500' },
+  bodyMedium: { fontFamily: 'System', fontWeight: '600' },
+  bodySemibold: { fontFamily: 'System', fontWeight: '700' },
+  bodyBold: { fontFamily: 'System', fontWeight: '800' },
+  mono: { fontFamily: 'Courier', fontWeight: '700' },
+  label: { fontFamily: 'System', fontWeight: '800', letterSpacing: 1.5, textTransform: 'uppercase' }, // Bold, uppercase labels
 };
 
 export const TYPE = {
-  h1: { fontSize: 30, lineHeight: 38, ...FONTS.heading },
-  h2: { fontSize: 24, lineHeight: 32, ...FONTS.heading },
-  h3: { fontSize: 20, lineHeight: 28, ...FONTS.heading },
-  h4: { fontSize: 17, lineHeight: 24, ...FONTS.bodyBold },
-  body: { fontSize: 15, lineHeight: 22, ...FONTS.body },
-  bodySmall: { fontSize: 13, lineHeight: 20, ...FONTS.body },
-  caption: { fontSize: 11, lineHeight: 16, ...FONTS.bodySemibold },
-  label: { fontSize: 10, lineHeight: 14, ...FONTS.label },
-  counter: { fontSize: 28, lineHeight: 36, ...FONTS.mono },
-  counterSmall: { fontSize: 18, lineHeight: 24, ...FONTS.mono },
+  h1: { fontSize: 32, lineHeight: 40, ...FONTS.heading },
+  h2: { fontSize: 26, lineHeight: 34, ...FONTS.heading },
+  h3: { fontSize: 22, lineHeight: 30, ...FONTS.heading },
+  h4: { fontSize: 18, lineHeight: 26, ...FONTS.bodyBold },
+  body: { fontSize: 16, lineHeight: 24, ...FONTS.body },
+  bodySmall: { fontSize: 14, lineHeight: 22, ...FONTS.body },
+  caption: { fontSize: 12, lineHeight: 18, ...FONTS.bodySemibold },
+  label: { fontSize: 11, lineHeight: 16, ...FONTS.label },
+  counter: { fontSize: 32, lineHeight: 40, ...FONTS.mono },
+  counterSmall: { fontSize: 20, lineHeight: 26, ...FONTS.mono },
 };
 
 // ── Spacing ──────────────────────────────────────────
@@ -97,47 +99,49 @@ export const SPACING = {
   xl: 20,
   xxl: 24,
   xxxl: 32,
-  section: 40,
+  section: 48, // slightly more breathing room for blocky UI
 };
 
 // ── Radius ───────────────────────────────────────────
+// Neo Brutalism uses sharp corners or very square radii
 export const RADIUS = {
-  sm: 8,
-  md: 14,
-  lg: 20,
-  xl: 24,
-  xxl: 28,
-  pill: 100,
+  sm: 2,
+  md: 4,
+  lg: 6,
+  xl: 8,
+  xxl: 8, // Overridden pill shapes to squares
+  pill: 8, // Overridden pill shapes to squares
 };
 
 // ── Shadows ──────────────────────────────────────────
+// Hard block shadows, no blur, solid black
 export const SHADOWS = {
   soft: {
-    shadowColor: '#1A1A1A',
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    shadowColor: '#000000',
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    shadowOffset: { width: 3, height: 3 },
+    elevation: 4, 
   },
   card: {
-    shadowColor: '#1A1A1A',
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3,
-  },
-  elevated: {
-    shadowColor: '#1A1A1A',
-    shadowOpacity: 0.10,
-    shadowRadius: 20,
-    shadowOffset: { width: 0, height: 6 },
+    shadowColor: '#000000',
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    shadowOffset: { width: 5, height: 5 },
     elevation: 6,
   },
+  elevated: {
+    shadowColor: '#000000',
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    shadowOffset: { width: 8, height: 8 },
+    elevation: 8,
+  },
   button: {
-    shadowColor: '#2E4036',
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#000000',
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    shadowOffset: { width: 4, height: 4 },
     elevation: 4,
   },
 };

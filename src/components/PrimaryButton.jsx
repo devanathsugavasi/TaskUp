@@ -22,7 +22,7 @@ export default function PrimaryButton({ label, onPress, disabled, loading, style
         onPressOut={handlePressOut}
         activeOpacity={0.9}
       >
-        <Text style={styles.label}>{loading ? 'Please wait...' : label}</Text>
+        <Text style={[styles.label, disabled && styles.labelDisabled]}>{loading ? 'Please wait...' : label}</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -30,22 +30,29 @@ export default function PrimaryButton({ label, onPress, disabled, loading, style
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: COLORS.accentClay,
+    backgroundColor: COLORS.warningAmber, // Yellow is more aggressive and brutalist
     paddingVertical: SPACING.lg,
     paddingHorizontal: SPACING.xxl,
-    borderRadius: RADIUS.xl,
+    borderRadius: RADIUS.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 52,
+    minHeight: 56,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
     ...SHADOWS.button,
   },
   disabled: {
-    opacity: 0.5,
+    backgroundColor: COLORS.softSurface,
+    ...SHADOWS.soft, // reduced shadow when disabled
   },
   label: {
-    color: COLORS.white,
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 0.3,
+    color: COLORS.textCharcoal, // High contrast black on yellow
+    fontSize: 18,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase', // Brutalist energy
   },
+  labelDisabled: {
+    color: COLORS.mutedText,
+  }
 });

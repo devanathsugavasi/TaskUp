@@ -34,8 +34,9 @@ export default function DashboardScreen({ navigation }) {
   let filtered = tasks.filter(t => t.status === 'pending');
 
   if (activeZone === 'Today') {
-    // Show all pending tasks (closest to today's focus)
-    filtered = filtered;
+    // FIX: Actually filter by today's date (was previously a no-op)
+    const todayStr = new Date().toISOString().split('T')[0];
+    filtered = filtered.filter(t => t.calendarDate === todayStr);
   } else if (activeZone !== 'All') {
     filtered = filtered.filter(t => t.zone === activeZone);
   }
@@ -158,32 +159,36 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   name: {
-    fontSize: 24,
-    fontWeight: '800',
+    fontSize: 28,
+    fontWeight: '900',
     color: COLORS.textCharcoal,
-    letterSpacing: -0.3,
+    letterSpacing: -0.5,
+    textTransform: 'uppercase',
   },
   progressBubble: {
-    backgroundColor: COLORS.primaryMoss,
-    borderRadius: RADIUS.md,
+    backgroundColor: COLORS.primaryMoss, // Now black
+    borderRadius: RADIUS.sm,
     paddingVertical: SPACING.md,
     paddingHorizontal: SPACING.lg,
     alignItems: 'center',
-    minWidth: 60,
+    minWidth: 64,
+    borderWidth: 3,
+    borderColor: '#000000',
+    ...SHADOWS.card,
   },
   progressNum: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 20,
+    fontWeight: '900',
     color: COLORS.successSage,
     fontFamily: 'Courier',
   },
   progressLbl: {
     fontSize: 9,
     color: 'rgba(255,255,255,0.65)',
-    marginTop: 1,
-    fontWeight: '600',
+    marginTop: 2,
+    fontWeight: '800',
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 1,
   },
   searchWrap: {
     paddingHorizontal: SPACING.xl,

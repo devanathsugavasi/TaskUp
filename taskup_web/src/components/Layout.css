@@ -1,0 +1,180 @@
+/* ============================================
+   LAYOUT STYLES - App Shell and Navigation
+   Neo-Brutalism Design with Bottom Nav
+   ============================================ */
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main content area */
+.layout__content {
+  flex: 1;
+  padding-bottom: 80px; /* Space for bottom nav */
+}
+
+/* Bottom Navigation */
+.layout__nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  padding-bottom: max(var(--space-sm), env(safe-area-inset-bottom));
+  background-color: var(--color-bg-card);
+  border-top: var(--border-width) solid var(--color-border);
+  z-index: 100;
+}
+
+.layout__nav-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-sm);
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+  min-width: 50px;
+}
+
+.layout__nav-link:hover {
+  color: var(--color-text-primary);
+}
+
+.layout__nav-link--active {
+  color: var(--color-accent-pink);
+}
+
+.layout__nav-link--active svg {
+  stroke: var(--color-accent-pink);
+}
+
+.layout__nav-link svg {
+  width: 24px;
+  height: 24px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+}
+
+/* Add button - highlighted */
+.layout__nav-link--add {
+  background-color: var(--color-accent-yellow);
+  color: #000000;
+  border: 2px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  margin-top: -20px;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+}
+
+.layout__nav-link--add svg {
+  width: 28px;
+  height: 28px;
+}
+
+.layout__nav-link--add:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.layout__nav-link--add:active {
+  transform: scale(0.95);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Theme toggle */
+.layout__theme-toggle {
+  color: var(--color-text-muted);
+}
+
+.layout__theme-toggle:hover {
+  color: var(--color-accent-violet);
+}
+
+/* Desktop styles - hide bottom nav, use sidebar */
+@media (min-width: 1024px) {
+  .layout {
+    flex-direction: row;
+  }
+
+  .layout__content {
+    padding-bottom: 0;
+    padding-left: 240px; /* Space for sidebar */
+  }
+
+  .layout__nav {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: auto;
+    width: 240px;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    padding: var(--space-xl) var(--space-md);
+    gap: var(--space-sm);
+    border-top: none;
+    border-right: var(--border-width) solid var(--color-border);
+  }
+
+  .layout__nav-link {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    font-size: var(--text-sm);
+    border-radius: var(--radius-md);
+    min-width: auto;
+  }
+
+  .layout__nav-link svg {
+    flex-shrink: 0;
+  }
+
+  .layout__nav-link--add {
+    margin-top: var(--space-lg);
+    width: auto;
+    height: auto;
+    border-radius: var(--radius-md);
+    justify-content: center;
+  }
+
+  .layout__nav-link--add span {
+    display: inline;
+  }
+
+  .layout__theme-toggle {
+    margin-top: auto;
+  }
+}
+
+/* Tablet styles */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .layout__nav {
+    padding: var(--space-md);
+  }
+
+  .layout__nav-link {
+    font-size: 11px;
+    min-width: 60px;
+  }
+}

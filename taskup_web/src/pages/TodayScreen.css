@@ -1,0 +1,148 @@
+/* ============================================
+   TODAY SCREEN STYLES - Neo-Brutalism Design
+   ============================================ */
+
+.today-screen {
+  min-height: 100vh;
+  padding: var(--space-lg);
+  background-color: var(--color-bg-primary);
+}
+
+.today-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Header */
+.today-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.today-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: var(--space-xs);
+}
+
+.today-date {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+}
+
+/* Progress */
+.today-progress {
+  background-color: var(--color-bg-card);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.today-progress__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.today-progress__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.today-progress__stats {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+/* Priority Sections */
+.today-section {
+  margin-bottom: var(--space-xl);
+}
+
+.today-section__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.today-section__indicator {
+  width: 8px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+}
+
+.today-section__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 900;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.today-section__count {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-left: auto;
+}
+
+.today-section__tasks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  padding-left: var(--space-lg);
+  border-left: 3px solid var(--color-bg-secondary);
+}
+
+/* Empty state */
+.today-empty {
+  text-align: center;
+  padding: var(--space-3xl) var(--space-lg);
+}
+
+.today-empty__icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-accent-mint);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.today-empty__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+
+.today-empty__text {
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .today-title {
+    font-size: var(--text-2xl);
+  }
+
+  .today-section__tasks {
+    padding-left: var(--space-md);
+  }
+}

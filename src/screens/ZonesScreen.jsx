@@ -7,7 +7,8 @@ import { useTasks } from '../contexts/TaskContext';
 import PrimaryButton from '../components/PrimaryButton';
 import { COLORS, SPACING, RADIUS, SHADOWS, ZONE_COLORS } from '../theme';
 
-const DEFAULT_ZONES = [
+// Preset zones — this is the initial value; NEVER mutated directly
+const PRESET_ZONES = [
   { name: 'Work Zone', color: '#A8705A' },
   { name: 'Reading Zone', color: '#5A7F66' },
   { name: 'Meeting Zone', color: '#5F7A6E' },
@@ -19,8 +20,10 @@ const DEFAULT_ZONES = [
 export default function ZonesScreen({ navigation }) {
   const { zones, fetchZones, addZone } = useTasks();
   const [loading, setLoading] = useState(false);
+  // Use state so we can add custom zones without mutating PRESET_ZONES
+  const [zoneList, setZoneList] = useState([...PRESET_ZONES]);
   const [selected, setSelected] = useState(
-    DEFAULT_ZONES.reduce((acc, z) => ({ ...acc, [z.name]: true }), {})
+    PRESET_ZONES.reduce((acc, z) => ({ ...acc, [z.name]: true }), {}),
   );
   const [customName, setCustomName] = useState('');
 
@@ -34,29 +37,31 @@ export default function ZonesScreen({ navigation }) {
     setSelected(prev => ({ ...prev, [name]: !prev[name] }));
   };
 
+  // Add a custom zone to the STATE-managed list (not by mutating constant)
   const addCustomZone = () => {
     const trimmed = customName.trim();
     if (!trimmed) return;
-    if (DEFAULT_ZONES.some(z => z.name === trimmed) || selected[trimmed]) {
+    if (zoneList.some(z => z.name.toLowerCase() === trimmed.toLowerCase()) || selected[trimmed]) {
       Alert.alert('Duplicate', 'This zone already exists.');
       return;
     }
-    DEFAULT_ZONES.push({ name: trimmed, color: COLORS.primaryMoss });
+    // Spread into new array — not push() on the constant
+    setZoneList(prev => [...prev, { name: trimmed, color: COLORS.primaryMoss }]);
     setSelected(prev => ({ ...prev, [trimmed]: true }));
     setCustomName('');
   };
 
   const setupZones = async () => {
-    const selectedZones = DEFAULT_ZONES.filter(z => selected[z.name]);
+    const selectedZones = zoneList.filter(z => selected[z.name]);
     if (selectedZones.length === 0) {
       Alert.alert('Select Zones', 'Please select at least one zone.');
       return;
     }
     setLoading(true);
     try {
-      for (const z of selectedZones) {
-        await addZone(z.name, z.color);
-      }
+      await Promise.all(
+        selectedZones.map(z => addZone(z.name, z.color).catch(e => console.log('Zone exists?', e)))
+      );
       navigation.replace('Main');
     } catch (e) {
       Alert.alert('Error', e.message);
@@ -83,7 +88,7 @@ export default function ZonesScreen({ navigation }) {
       </Text>
 
       <FlatList
-        data={DEFAULT_ZONES}
+        data={zoneList}
         keyExtractor={item => item.name}
         scrollEnabled={false}
         renderItem={({ item }) => {
@@ -147,13 +152,16 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xxxl,
   },
   logoBox: {
-    width: 36,
-    height: 36,
+    width: 48,
+    height: 48,
     backgroundColor: COLORS.primaryMoss,
-    borderRadius: 10,
+    borderRadius: 0,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: SPACING.sm + 2,
+    marginRight: SPACING.md,
+    ...SHADOWS.button,
   },
   logoT: {
     fontSize: 18,
@@ -172,16 +180,19 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-18deg' }],
   },
   appName: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '900',
     color: COLORS.textCharcoal,
+    textTransform: 'uppercase',
+    letterSpacing: -1,
   },
   title: {
-    fontSize: 26,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '900',
     color: COLORS.textCharcoal,
     marginBottom: SPACING.sm,
-    letterSpacing: -0.3,
+    letterSpacing: -1,
+    textTransform: 'uppercase',
   },
   sub: {
     fontSize: 14,
@@ -193,31 +204,35 @@ const styles = StyleSheet.create({
   zoneRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.softSurface,
+    backgroundColor: COLORS.white,
     padding: SPACING.lg,
-    marginBottom: SPACING.sm + 2,
-    borderRadius: RADIUS.lg,
-    borderWidth: 1.5,
+    marginBottom: SPACING.md,
+    borderRadius: RADIUS.sm,
+    borderWidth: 3,
     borderColor: COLORS.softBorder,
+    ...SHADOWS.soft,
   },
   dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 14,
+    height: 14,
+    borderRadius: 0,
+    borderWidth: 2,
+    borderColor: COLORS.textCharcoal,
     marginRight: SPACING.md,
   },
   zoneName: {
     flex: 1,
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 16,
+    fontWeight: '800',
     color: COLORS.textCharcoal,
+    textTransform: 'uppercase',
   },
   check: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 1.5,
-    borderColor: COLORS.softBorder,
+    width: 24,
+    height: 24,
+    borderRadius: 2,
+    borderWidth: 2,
+    borderColor: COLORS.textCharcoal,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -233,24 +248,30 @@ const styles = StyleSheet.create({
   },
   customInput: {
     flex: 1,
-    backgroundColor: COLORS.softSurface,
-    borderWidth: 1,
+    backgroundColor: COLORS.white,
+    borderWidth: 3,
     borderColor: COLORS.softBorder,
     color: COLORS.textCharcoal,
     padding: SPACING.md,
-    borderRadius: RADIUS.md,
-    fontSize: 14,
+    borderRadius: RADIUS.sm,
+    fontSize: 16,
+    fontWeight: '600',
+    ...SHADOWS.soft,
   },
   addBtn: {
-    backgroundColor: COLORS.primaryMoss,
+    backgroundColor: COLORS.successSage, // Mint
     paddingHorizontal: SPACING.xl,
-    borderRadius: RADIUS.md,
+    borderRadius: RADIUS.sm,
+    borderWidth: 3,
+    borderColor: COLORS.softBorder,
     alignItems: 'center',
     justifyContent: 'center',
+    ...SHADOWS.button,
   },
   addBtnText: {
-    color: COLORS.white,
-    fontSize: 14,
-    fontWeight: '700',
+    color: COLORS.textCharcoal,
+    fontSize: 16,
+    fontWeight: '900',
+    textTransform: 'uppercase',
   },
 });
